@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de-DE">
+<head>
+<title>FFRL - SelfService - Portal</title>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.window.css">
+<link id="css_source" rel="stylesheet" type="text/css" href="css/main.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.js"></script>
+<script src="js/jquery.window.js"></script>
+<script src="js/time_tracking.js"></script>
+<script src="js/hq.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/order.js"></script>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+
+<div id="menu">
+	<ul>
+		$$top_menu$$
+		<li>
+			<span><a href="?do=logout">Abmelden</a></span>
+                </li>
+	</ul>
+<!--
+	<div id="css_switch">
+		<select>
+			<option value="css/main.css">Default</option>
+			<option value="css/main_blue.css">Blue</option>
+		</select>
+	</div>
+-->
+	<div id="ajax-loader">&nbsp;</div>
+	<div id="status_msg"></div>
+</div>
+
+<div id="main_panel"></div>

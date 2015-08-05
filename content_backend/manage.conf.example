@@ -1,0 +1,29 @@
+package Conf;
+
+use strict;
+
+use vars qw( $BASE %verz %mysql_conf %mysql_cludes_conf %mysql_xtc_conf %mail);
+
+
+# Directorys
+my $con = $main::BASE;
+my $tem = "$con/template";
+
+$verz{'content'} = $con;
+
+$verz{'core'}			= "$tem/core";
+$verz{'mitarbeiter'}		= "$tem/mitarbeiter";
+
+# Database
+$mysql_conf{'db'}       = '<<DB-NAME>>';
+$mysql_conf{'user'}     = '<<DB-USER>>';
+$mysql_conf{'pwd'}      = '<<DB-PWD>>';
+$mysql_conf{'host'}     = '<<DB-HOST>>';
+$mysql_conf{'db_conf'}  = "DBI:mysql:database=$mysql_conf{'db'};host=$mysql_conf{'host'}";
+$mysql_conf{'authhost'} = '<<DB-HOST>>';
+
+# Mail
+$mail{'host'} = '<<MAIL-HOST>>';
+$mail{'user'} = '<<MAIL-USER>>';
+$mail{'pwd'} = '<<MAIL-PWD>>';
+1;

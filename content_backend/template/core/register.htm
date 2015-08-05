@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de-DE">
+<head>
+<title>FFRL - SelfService - Portal</title>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="css/main.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+</head>
+
+<body style="margin: 0px">
+	<div class="login_bg">
+		<div class="login_wrapper">
+			<div class="login_hq">
+				<div class="hq_icon"></div>
+				<div class="hq_text">Willkommen im<br>FFRL - SelfService-Portal</div>
+			</div>
+		        <div class="login" style="height:470px;">
+        		        <form action="?do=register_ex" method="post" style="text-align: center;">
+        	        		<input name="do" type="hidden" value="register_ex" />
+					
+	        	        	<input name="user" type="text" class="text_input login_field" placeholder="username" id="login-user" />
+	        	        	<label for="login-user" class="login-field-icon fui-user"></label>
+					
+	        	        	<input name="pwd" type="password" class="text_input login_field" placeholder="password" id="login-pw" />
+	        	        	<label for="login-pw" class="login-field-icon fui-pw"></label>
+	        	        	
+	        	        	<input name="pwd_retype" type="password" class="text_input login_field" placeholder="password retype" id="login-pw-retype" />
+	        	        	<label for="login-pw-retype" class="login-field-icon fui-pw"></label>
+	        	        	
+	        	        	<input name="login_email" type="text" class="text_input login_field" placeholder="email" id="login-email" />
+	        	        	<label for="login-email" class="login-field-icon fui-mail"></label>
+					
+					<br><br>
+		                	<input type="submit" value="Registrieren" class="btn_login" />
+					<br><br>
+					<a href="/?do=login" style="text-decoration:none;"><input type="button" value="Abbrechen" class="btn_login" id="register_new_account"></input></a>
+        	        	</form>
+		        </div>
+		</div>
+	</div>
+</body>
+</html>

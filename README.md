@@ -1,5 +1,4 @@
 # selfserviceportal v0.9beta
-# htdocs directory
 
 This is the FFRL SSP Repo, the Freifunk Rheinland e.V. Self Service Portal!
 

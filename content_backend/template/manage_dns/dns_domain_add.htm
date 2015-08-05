@@ -1,0 +1,154 @@
+<div class="win_content" style="font-size: 10px;">
+	<div>
+		<select class="dns_select" name="dns_community_select" id="dns_community_select">
+			<option value="default">
+				Bitte w&auml;hle deine Community
+			</option>
+			$$select_communities$$
+		</select>
+	</div>
+	<div style="margin-top:20px;">
+		<div style="color: red; display:none;" id="dns_domain_error">Name nicht verf&uuml;gbar</div>
+		<input type="text" name="dns_domain" id="dns_domain" placeholder="Domain">
+
+	
+	
+		<select class="dns_select" name="dns_tld_select" id="dns_tld_select">
+			<option value="default">
+				Bitte w&auml;hle eine TLD
+			</option>
+			$$select_tld$$
+		</select>
+	</div>
+	<div style="margin-top:20px;">
+		<select class="dns_select" name="dns_ipv4_select" id="dns_ipv4_select">
+			<option value="default">
+				IPv4 automatisch zuweisen
+			</option>
+			$$select_ipv4$$
+		</select>
+	</div>
+	<div style="margin-top:20px;">
+		<select class="dns_select" name="dns_ipv6_select" id="dns_ipv6_select">
+			<option value="default">
+				IPv6 automatisch zuweisen
+			</option>
+			$$select_ipv6$$
+		</select>
+	</div>
+	<div style="margin-top:20px;">
+		<button class="dns_button" id="dns_add_ip_save">Speichern</button>
+	</div>
+	<div id="add_record_error"></test>
+</div>
+<script type="text/javascript">
+	$('.dns_select').selectmenu();
+	$('#dns_tld_select').selectmenu({
+		change: function( event, data ){
+			if($(this).val() != 'default' && $('#dns_domain').val().length > 2) {
+				var domain = $(this).val();
+				var record = $('#dns_domain').val();
+				$.ajax({
+		        		type: "POST",
+			        	url: '/',
+			        	cache: false,
+		        		dataType: "JSON",
+					data: ({do: 'dns_check_record', record: record, domain: domain}), 
+					success: function(data) {
+						if(data.status == 1) {
+							$('#dns_domain_error').show();
+						} else {
+							$('#dns_domain_error').hide();
+						}
+					}
+				});
+			}
+			else {
+				$('#dns_domain_error').hide();
+			}
+		}
+	});
+	$('.ui-selectmenu-menu').css('z-index', 10000);
+	$('.dns_button').button();
+	$('#dns_domain').on('keyup', function() {
+		if($(this).val().length > 2 && $('#dns_tld_select').val() != 'default') {
+			var record = $(this).val();
+			var domain = $('#dns_tld_select').val();
+			$.ajax({
+	        		type: "POST",
+		        	url: '/',
+		        	cache: false,
+	        		dataType: "JSON",
+				data: ({do: 'dns_check_record', record: record, domain: domain}), 
+				success: function(data) {
+					if(data.status == 1) {
+						$('#dns_domain_error').show();
+					} else {
+						$('#dns_domain_error').hide();
+					}
+				}
+			});
+		}
+		else {
+			$('#dns_domain_error').hide();
+		}
+	});
+	$('#dns_add_ip_save').on('click', function() {
+		var comm = $('#dns_community_select').val();
+		var domain = $('#dns_domain').val();
+		var tld =  $('#dns_tld_select').val();
+		var ip4 = $('#dns_ipv4_select').val();
+		var ip6 = $('#dns_ipv6_select').val();
+
+		if(comm != 'default') {
+			if(domain != 'default') {
+				if(domain.length > 2) {
+					if(tld != 'default') {
+						$.ajax({
+				        		type: "POST",
+					        	url: '/',
+					        	cache: false,
+				        		dataType: "JSON",
+							data: ({do: 'dns_check_record', record: domain, domain: tld}), 
+							success: function(data) {
+								if(data.status == 1) {
+									$('#dns_domain_error').show();
+									alert('Name nicht verfügbar');
+								} else {
+									$('#dns_domain_error').hide();
+									$.ajax({
+							        		type: "POST",
+								        	url: '/',
+								        	cache: false,
+							        		dataType: "JSON",
+										data: ({do: 'dns_add_record', comm: comm, ip4: ip4, ip6: ip6, record: domain, domain: tld}), 
+										success: function(data) {
+											alert(data);
+											if(data.status == 1) {
+												$('#add_record_error').html(data.msg);
+											} else {
+												$('#add_record_error').html('Deine Domain '+data.record+'.'+data.tld+' ist jetzt für '+data.ip4+' intern und '+data.ip6+' intern und extern zu erreichen');
+											}
+										}
+									});
+								}
+							}
+						});
+					}
+					else {
+						alert('Bitte TLD auswählen');
+					}
+				}
+				else {
+					alert('Domain muss mehr als 2 Zeichen lang sein');
+				}
+			}
+			else {
+				alert('Bitte Domain eingeben');
+			}
+		}
+		else {
+			alert('Bitte Community wählen');
+		}
+	});
+</script>
