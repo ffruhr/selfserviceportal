@@ -2,12 +2,34 @@
 use strict;
 use PowerDNS::Backend::MySQL;
 use Net::IP;
+use NetAddr::IP;
+
 
 sub dns_domain_add
 {
+        my $remote_ip = NetAddr::IP->new(remote_addr());
+
         for my $community(keys %Community::communities)
         {
-                $data{'select_communities'} .= "<option value=\"$Community::communities{$community}{'tld'}\">$Community::communities{$community}{'name'}</option>";
+                my $selected_community;
+                if($remote_ip->version() == 4)
+                {
+                        my $subnet = NetAddr::IP->new($Community::communities{$community}{'ip4_subnet'});
+                        if($remote_ip->within($subnet))
+                        {
+                                $selected_community = 'selected';
+                        }
+                }
+                elsif($remote_ip->version() == 6)
+                {
+                        my $subnet = NetAddr::IP->new($Community::communities{$community}{'ip6_subnet'});
+                        if($remote_ip->within($subnet))
+                        {
+                                $selected_community = 'selected';
+                        }
+                }
+
+                $data{'select_communities'} .= "<option value=\"$Community::communities{$community}{'tld'}\" $selected_community>$Community::communities{$community}{'name'}</option>";
                 $data{'select_tld'} .= "<option value=\"$Community::communities{$community}{'tld'}\">.$Community::communities{$community}{'tld'}</option>";
         }
 
