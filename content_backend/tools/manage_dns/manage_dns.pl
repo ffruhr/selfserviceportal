@@ -91,13 +91,25 @@ sub dns_add_record
 
                 if($pdns->add_record(\@rr4, \$params{'domain'}) && $pdns->add_record(\@rr6, \$params{'domain'}))
                 {
-                        my $ip4_insert_stmnt = "INSERT INTO user_ip4 SET ui4_ip = ?, ui4_mit = ?";
-                        my $ip4_sth = $DBH->prepare($ip4_insert_stmnt);
-                        $ip4_sth->execute($params{'ip4'}, $user_hash{'mit'}) || &abort(DBI->errstr);
+                        my $ip4_select_stmnt = "SELECT ui4 FROM user_ip4 WHERE ui4_ip = ? && ui4_mit = ?";
+                        my $ip4_select_sth = $DBH->prepare($ip4_select_stmnt);
+                        my $ip4_select_rc = $ip4_select_sth->execute($params{'ip4'}, $user_hash{'mit'}) || &abort(DBI->errstr);
 
-                        my $ip6_insert_stmnt = "INSERT INTO user_ip6 SET ui6_ip = ?, ui6_mit = ?";
-                        my $ip6_sth = $DBH->prepare($ip6_insert_stmnt);
-                        $ip6_sth->execute($params{'ip6'}, $user_hash{'mit'}) || &abort(DBI->errstr);
+                        if($ip4_select_rc < 1) { 
+                                my $ip4_insert_stmnt = "INSERT INTO user_ip4 SET ui4_ip = ?, ui4_mit = ?";
+                                my $ip4_sth = $DBH->prepare($ip4_insert_stmnt);
+                                $ip4_sth->execute($params{'ip4'}, $user_hash{'mit'}) || &abort(DBI->errstr);
+                        }
+
+                        my $ip6_select_stmnt = "SELECT ui6 FROM user_ip6 WHERE ui6_ip = ? && ui6_mit = ?";
+                        my $ip6_select_sth = $DBH->prepare($ip6_select_stmnt);
+                        my $ip6_select_rc = $ip6_select_sth->execute($params{'ip6'}, $user_hash{'mit'}) || &abort(DBI->errstr);
+
+                        if($ip6_select_rc < 1) {
+                                my $ip6_insert_stmnt = "INSERT INTO user_ip6 SET ui6_ip = ?, ui6_mit = ?";
+                                my $ip6_sth = $DBH->prepare($ip6_insert_stmnt);
+                                $ip6_sth->execute($params{'ip6'}, $user_hash{'mit'}) || &abort(DBI->errstr);
+                        }
                 }
                 else
                 {
