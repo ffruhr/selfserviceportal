@@ -4,6 +4,65 @@ use PowerDNS::Backend::MySQL;
 use Net::IP;
 use NetAddr::IP;
 
+sub pdns_connect
+{
+        my $pdns_conf = {  db_user                 =>      $Conf::pdns_conf{'db_user'},
+                        db_pass                 =>      $Conf::pdns_conf{'db_pass'},
+                        db_name                 =>      $Conf::pdns_conf{'db_name'},
+                        db_port                 =>      $Conf::pdns_conf{'db_port'},
+                        db_host                 =>      $Conf::pdns_conf{'db_host'},
+                        mysql_print_error       =>      $Conf::pdns_conf{'mysql_print_error'},
+                        mysql_warn              =>      $Conf::pdns_conf{'mysql_warn'},
+                        mysql_auto_commit       =>      $Conf::pdns_conf{'mysql_auto_commit'},
+                        mysql_auto_reconnect    =>      $Conf::pdns_conf{'mysql_auto_reconnect'},
+                        lock_name               =>      $Conf::pdns_conf{'lock_name'},
+                        lock_timeout            =>      $Conf::pdns_conf{'lock_timeout'}
+        };
+
+        return PowerDNS::Backend::MySQL->new($pdns_conf);
+}
+
+sub dns_domain_list
+{
+        my $pdns = &pdns_connect();
+        my %table_content;
+
+        my $ip4_select_stmnt = "SELECT ui4_ip FROM user_ip4 WHERE ui4_mit = ?";
+        my $ip4_select_sth = $DBH->prepare($ip4_select_stmnt);
+        $ip4_select_sth->execute($user_hash{'mit'}) || &abort(DBI->errstr);
+
+        while(my $ip4_ref = $ip4_select_sth->fetchrow_hashref())
+        {
+                for my $domain(keys(%Community::communities))
+                {
+                        $table_content{${$pdns->find_record_by_content(\$ip4_ref->{'ui4_ip'}, \$domain)}[0]}{'ip4'} = $ip4_ref->{'ui4_ip'};
+                }
+        }
+
+        my $ip6_select_stmnt = "SELECT ui6_ip FROM user_ip6 WHERE ui6_mit = ?";
+        my $ip6_select_sth = $DBH->prepare($ip6_select_stmnt);
+        $ip6_select_sth->execute($user_hash{'mit'}) || &abort(DBI->errstr);
+
+        while(my $ip6_ref = $ip6_select_sth->fetchrow_hashref())
+        {
+                for my $domain(keys(%Community::communities))
+                {
+                        $table_content{${$pdns->find_record_by_content(\$ip6_ref->{'ui6_ip'}, \$domain)}[0]}{'ip6'} = $ip6_ref->{'ui6_ip'};
+                }
+        }
+
+        my $table_part_orig = &load_template('manage_dns', 'dns_domain_list_table_part.htm');
+
+        for my $hostname(keys %table_content)
+        {
+                my $tpl_part = $table_part_orig;
+                $tpl_part =~ s/\$\$hostname\$\$/$hostname/;
+                $tpl_part =~ s/\$\$(.+?)\$\$/$table_content{$hostname}{$1}/g;
+                $data{'dns_domain_list_tbody'} .= $tpl_part;
+        }
+
+        &html_parser('manage_dns', 'dns_domain_list.htm');
+}
 
 sub dns_domain_add
 {
