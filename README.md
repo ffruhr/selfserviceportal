@@ -9,6 +9,7 @@ The SSP should do several Things:
 v1.0:
 - User self register static IPv4 and IPv6 Adresses
 - User self register subdomains to registered static IPv4 and IPv6 Adresses
+- User self delete own entries
 - Community output of dhcp Adresses for using dhcp Autoconfiguration of static IP Adresses
 
 v2.0:
